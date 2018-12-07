@@ -2,6 +2,8 @@
   <dictionary name="JiweiHuang">
     <words>
       <w>mathematica</w>
+      <w>romberg</w>
+      <w>univariate</w>
     </words>
   </dictionary>
 </component>

@@ -8,8 +8,7 @@ import scala.math._
 
 trait TQuadraticVertexLogistic extends TUnivariateDifferentiableFunction
   with TUnivariateIntegrableFunction
-  with TUnivariateDerivativeFunction
-  with TUnivariateIntegralFunction {
+  with TUnivariateDerivativeFunction {
   val quadraticVertexA: Double
   val quadraticVertexB: Double
   val quadraticVertexC: Double
@@ -29,7 +28,7 @@ trait TQuadraticVertexLogistic extends TUnivariateDifferentiableFunction
     * @param x independent variable.
     * @return the integral value.
     */
-  override def integrate(x: Double): Double = {
+  def integrateAnalyzablePart(x: Double): Double = {
     quadraticVertexLogisticD * x + quadraticVertexA * logisticM * pow(x, 3) / 3 -
       2 * quadraticVertexA * quadraticVertexB * logisticM * x * log(1 + exp(logisticK * (x - logisticX0))) / logisticK +
       quadraticVertexA * pow(quadraticVertexB, 2) * logisticM * log(exp(logisticK * x) + exp(logisticK * logisticX0)) / logisticK +

@@ -4,7 +4,7 @@ import cn.edu.gxust.jiweihuang.scala.test.UnitSpec
 
 class QuadraticVertexLogisticTest extends UnitSpec {
   "" should "" in {
-    println(QuadraticVertexLogistic(1e-2,1200,0,1,0.005,300,1.5).integrate(0,1000))
+    println(QuadraticVertexLogistic(1e-2,1200,0,1,0.005,300,1.5).integrateAnalyzablePart(1000))
     println(QuadraticVertexLogistic(1e-2,1200,0,1,0.005,300,1.5).integrateRomberg(0, 1000))
     println(QuadraticVertexLogistic(1e-2,1200,0,1,0.005,300,1.5).integrateSimpson(0, 1000))
     println(QuadraticVertexLogistic(1e-2,1200,0,1,0.005,300,1.5).integrateTrapezoid(0, 1000))

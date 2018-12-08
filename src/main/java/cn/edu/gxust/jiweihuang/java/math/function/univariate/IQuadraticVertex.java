@@ -101,39 +101,47 @@ public interface IQuadraticVertex extends IQuadratic {
         }
 
         private void checkParameter(double[] parameters) {
-            if (parameters == null) throw new IllegalArgumentException(String.format(
-                    "Expected the parameter {parameter} is not null,but got {parameters = null}"
-            ));
-            if (parameters.length != 3) throw new IllegalArgumentException(String.format(
-                    "Expected the parameter {parameters.length} equals to 3,but got {parameters.length = %d}", parameters.length
-            ));
-            if (parameters[0] == 0) throw new IllegalArgumentException(String.format(
-                    "Expected the parameter {parameters[0]} not equal to 0,but got {parameters[0] = %f}", parameters[0]
-            ));
+            if (parameters == null)
+                throw new IllegalArgumentException(String.format("Expected the parameter {parameter} is not null,but got {parameters = null}"));
+            else if (parameters.length != 3)
+                throw new IllegalArgumentException(String.format("Expected the parameter {parameters.length} equals to 3,but got {parameters.length = %d}", parameters.length));
+            else if (parameters[0] == 0)
+                throw new IllegalArgumentException(String.format("Expected the parameter {parameters[0]} not equal to 0,but got {parameters[0] = %f}", parameters[0]));
         }
     }
 
-    static double quadraticVertex(double a, double b, double c, double x) {
-        return a * Math.pow(x - b, 2) + c;
+    static double quadraticVertex(double x, double... parameter) {
+        //a = parameter[0]
+        //b = parameter[1]
+        //c = parameter[2]
+        return parameter[0] * Math.pow(x - parameter[1], 2) + parameter[2];
     }
 
-    static double derivativeQuadraticVertex(double a, double b, double c, double x) {
-        return 2 * a * (x - b);
+    static double quadraticVertexDerivative(double x, double... parameter) {
+        //a = parameter[0]
+        //b = parameter[1]
+        //c = parameter[2]
+        return 2 * parameter[0] * (x - parameter[1]);
     }
 
-    static double integrateQuadraticVertex(double a, double b, double c, double x) {
-        return a * Math.pow(b, 2) * x + c * x - a * b * Math.pow(x, 2) + a * Math.pow(x, 3) / 3.0;
+    static double quadraticVertexIntegrate(double x, double... parameter) {
+        //a = parameter[0]
+        //b = parameter[1]
+        //c = parameter[2]
+        return parameter[0] * Math.pow(parameter[1], 2) * x +
+                parameter[2] * x - parameter[0] * parameter[1] *
+                Math.pow(x, 2) + parameter[0] * Math.pow(x, 3) / 3.0;
     }
 
-    static double derivativeQuadraticVertexA(double a, double b, double c, double x) {
-        return Math.pow(x - b, 2);
+    static double quadraticVertexDerivativeA(double x, double... parameter) {
+        return Math.pow(x - parameter[1], 2);
     }
 
-    static double derivativeQuadraticVertexB(double a, double b, double c, double x) {
-        return -2 * a * (x - b);
+    static double quadraticVertexDerivativeB(double x, double... parameter) {
+        return -2 * parameter[0] * (x - parameter[1]);
     }
 
-    static double derivativeQuadraticVertexC(double a, double b, double c, double x) {
+    static double quadraticVertexDerivativeC(double x, double... parameter) {
         return 1;
     }
 

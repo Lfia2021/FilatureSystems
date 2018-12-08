@@ -29,5 +29,10 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="jcommon-1.0.24" level="project" />
+    <orderEntry type="library" name="jfreechart-1.5.0" level="project" />
+    <orderEntry type="library" name="jfreesvg-3.3" level="project" />
+    <orderEntry type="library" name="orsoncharts-1.7" level="project" />
+    <orderEntry type="library" name="orsonpdf-1.8" level="project" />
   </component>
 </module>

@@ -32,7 +32,7 @@ trait TQuadraticVertex extends TQuadratic {
     * <p>whether quadratic function is invert.</p>
     * <p>if invert (i.e. open side down) return true else return false.</p>
     */
-  override val isInvert: Boolean = if (quadraticVertexA < 0) true else false
+  override val isInvert: Boolean = quadraticVertexA < 0
   /**
     * the x coordinate of intersection with x axis of function
     */

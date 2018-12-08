@@ -12,7 +12,8 @@ package cn.edu.gxust.jiweihuang.scala.math.function.univariate
 trait TQuadratic extends TUnivariateDifferentiableFunction
   with TUnivariateIntegrableFunction
   with TUnivariateDerivativeFunction
-  with TUnivariateIntegralFunction {
+  with TUnivariateIntegralFunction
+  with TUnivariateInverseFunction {
   /**
     * The vertex coordinates (x,y) of quadratic function
     */

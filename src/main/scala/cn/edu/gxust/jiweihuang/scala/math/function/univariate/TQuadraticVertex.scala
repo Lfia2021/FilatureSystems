@@ -6,7 +6,7 @@ import org.hipparchus.analysis.differentiation.DerivativeStructure
 import scala.math._
 
 /**
-  * <p>The class [[TQuadraticVertex]] is used for representing
+  * <p>The trait [[TQuadraticVertex]] is used for representing
   * the vertex form of quadratic function of which formula is
   * {{{q(x)=a*(x-b)^2+c}}}</p>
   *
@@ -57,34 +57,24 @@ trait TQuadraticVertex extends TQuadratic {
   override val formula: String = s"$quadraticVertexA * pow(x - $quadraticVertexB, 2) + $quadraticVertexC"
 
   /**
-    * <p>override the method of [[org.hipparchus.analysis.UnivariateFunction]],it can be used to
-    * get the value of univariate function.</p>
-    *
-    * @param x independent variable
-    * @return the value of univariate function.
+    * q(x) = a * pow(x-b,2) + c
     */
   override def value(x: Double): Double = quadraticVertexA * pow(x - quadraticVertexB, 2) + quadraticVertexC
 
-  /**
-    * <p>override the method of [[org.hipparchus.analysis.differentiation.UnivariateDifferentiableFunction]],
-    * it can be used to get the differential value (i.e. derivative value) of
-    * univariate function.</p>
-    *
-    * @param x independent variable
-    * @return the differential value (i.e. derivative value)
-    */
+
   override def value(x: DerivativeStructure): DerivativeStructure =
     x.subtract(quadraticVertexB).pow(2).multiply(quadraticVertexA).add(quadraticVertexC)
 
+  override def inverse(x: Double): Array[Double] = {
+    Array((quadraticVertexA * quadraticVertexB - sqrt(quadraticVertexA * (x - quadraticVertexC))) / quadraticVertexA,
+      (quadraticVertexA * quadraticVertexB + sqrt(quadraticVertexA * (x - quadraticVertexC))) / quadraticVertexA)
+  }
+
   /**
-    * <p>The method {{{integrate(x: Double)}}} is used to
-    * get value of analytical integral function.</p>
-    *
-    * @param x independent variable
-    * @return integral value of analytical integral function.
+    * iq(x) = a * pow(b,2) * x + c * x - a * b * pow(x,2)  +  (a * pow(x,3)) / 3
     */
-  override def integrate(x: Double): Double = quadraticVertexA * pow(quadraticVertexB, 2.0) * x +
-    quadraticVertexC * x - quadraticVertexA * quadraticVertexB * Math.pow(x, 2.0) +
+  override def integrate(x: Double): Double = quadraticVertexA * pow(quadraticVertexB, 2) * x +
+    quadraticVertexC * x - quadraticVertexA * quadraticVertexB * Math.pow(x, 2) +
     quadraticVertexA * pow(x, 3) / 3.0
 
   override def derivative(x: Double): Double = 2 * quadraticVertexA * (x - quadraticVertexB)
@@ -123,7 +113,7 @@ object TQuadraticVertex {
       val a = parameters(0)
       val b = parameters(1)
       //val c = parameters(2)
-      val result = Array[Double](3)
+      val result = new Array[Double](3)
       result(0) = pow(x - b, 2)
       result(1) = -2 * a * (x - b)
       result(2) = 1
@@ -140,7 +130,8 @@ object TQuadraticVertex {
   /**
     * in order to acquire ability of constructing [[TQuadraticVertex]] object without new.
     */
-  def apply(quadraticVertexA: Double = 1.0, quadraticVertexB: Double = 0.0, quadraticVertexC: Double = 0.0): TQuadraticVertex =
+  def apply(quadraticVertexA: Double = 1.0, quadraticVertexB: Double = 0.0,
+            quadraticVertexC: Double = 0.0): TQuadraticVertex =
     QuadraticVertex(quadraticVertexA, quadraticVertexB, quadraticVertexC)
 
   /**
@@ -154,16 +145,33 @@ object TQuadraticVertex {
     }
   }
 
-  def quadraticVertex(quadraticVertexA: Double = 1.0, quadraticVertexB: Double = 0.0, quadraticVertexC: Double = 0.0)(x: Double): Double = quadraticVertexA * pow(x - quadraticVertexB, 2) + quadraticVertexC
+  def quadraticVertex(quadraticVertexA: Double = 1.0,
+                      quadraticVertexB: Double = 0.0,
+                      quadraticVertexC: Double = 0.0)(x: Double): Double =
+    quadraticVertexA * pow(x - quadraticVertexB, 2) + quadraticVertexC
 
-  def quadraticVertexDerivative(quadraticVertexA: Double = 1.0, quadraticVertexB: Double = 0.0, quadraticVertexC: Double = 0.0)(x: Double): Double = 2 * quadraticVertexA * (x - quadraticVertexB)
+  def quadraticVertexDerivative(quadraticVertexA: Double = 1.0,
+                                quadraticVertexB: Double = 0.0,
+                                quadraticVertexC: Double = 0.0)(x: Double): Double =
+    2 * quadraticVertexA * (x - quadraticVertexB)
 
-  def quadraticVertexIntegrate(quadraticVertexA: Double = 1.0, quadraticVertexB: Double = 0.0, quadraticVertexC: Double = 0.0)(x: Double): Double = quadraticVertexA * pow(quadraticVertexB, 2.0) * x +
-    quadraticVertexC * x - quadraticVertexA * quadraticVertexB * pow(x, 2) + quadraticVertexA * pow(x, 3) / 3
+  def quadraticVertexIntegrate(quadraticVertexA: Double = 1.0,
+                               quadraticVertexB: Double = 0.0,
+                               quadraticVertexC: Double = 0.0)(x: Double): Double =
+    quadraticVertexA * pow(quadraticVertexB, 2.0) * x +
+      quadraticVertexC * x - quadraticVertexA * quadraticVertexB * pow(x, 2) + quadraticVertexA * pow(x, 3) / 3
 
-  def quadraticVertexDerivativeA(quadraticVertexA: Double = 1.0, quadraticVertexB: Double = 0.0, quadraticVertexC: Double = 0.0)(x: Double): Double = pow(x - quadraticVertexB, 2)
+  def quadraticVertexDerivativeA(quadraticVertexA: Double = 1.0,
+                                 quadraticVertexB: Double = 0.0,
+                                 quadraticVertexC: Double = 0.0)(x: Double): Double =
+    pow(x - quadraticVertexB, 2)
 
-  def quadraticVertexDerivativeB(quadraticVertexA: Double = 1.0, quadraticVertexB: Double = 0.0, quadraticVertexC: Double = 0.0)(x: Double): Double = -2 * quadraticVertexA * (x - quadraticVertexB)
+  def quadraticVertexDerivativeB(quadraticVertexA: Double = 1.0,
+                                 quadraticVertexB: Double = 0.0,
+                                 quadraticVertexC: Double = 0.0)(x: Double): Double =
+    -2 * quadraticVertexA * (x - quadraticVertexB)
 
-  def quadraticVertexDerivativeC(quadraticVertexA: Double = 1.0, quadraticVertexB: Double = 0.0, quadraticVertexC: Double = 0.0)(x: Double): Double = 1
+  def quadraticVertexDerivativeC(quadraticVertexA: Double = 1.0,
+                                 quadraticVertexB: Double = 0.0,
+                                 quadraticVertexC: Double = 0.0)(x: Double): Double = 1
 }

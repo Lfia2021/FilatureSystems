@@ -47,10 +47,9 @@ public interface IQuadraticVertexLogistic extends IUnivariateFunction, IUnivaria
     @Override
     default String formula() {
         return String.format(
-                "%f*(%f*pow(x-%f,2)+%f)/(1+exp(-%f*(x-%f)))+%f",
+                "%f*(%f*pow(x-%f,2)+%f)/(1+exp(-%f*(x-%f)))+%f", getLogisticM(),
                 getQuadraticVertexA(), getQuadraticVertexB(),
-                getQuadraticVertexC(),
-                getLogisticM(), getLogisticK(),
+                getQuadraticVertexC(), getLogisticK(),
                 getLogisticX0(), getQuadraticVertexLogisticD());
     }
 

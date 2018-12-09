@@ -4,6 +4,7 @@ import org.hipparchus.analysis.ParametricUnivariateFunction;
 import org.hipparchus.analysis.differentiation.DerivativeStructure;
 
 public interface IQuadraticVertex extends IQuadratic {
+
     double getQuadraticVertexA();
 
     double getQuadraticVertexB();

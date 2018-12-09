@@ -25,7 +25,7 @@ public class LogisticFitter extends AbstractCurveFitter {
 
         @Override
         public double[] gradient(double x, double... p) {
-            double[] v = new double[]{Double.POSITIVE_INFINITY,
+            double[] v = {Double.POSITIVE_INFINITY,
                     Double.POSITIVE_INFINITY,
                     Double.POSITIVE_INFINITY};
             try {
@@ -67,15 +67,15 @@ public class LogisticFitter extends AbstractCurveFitter {
     @Override
     protected LeastSquaresProblem getProblem(Collection<WeightedObservedPoint> observations) {
         // Prepare least-squares problem.
-        final int len = observations.size();
-        final double[] target = new double[len];
-        final double[] weights = new double[len];
+        final int length = observations.size();
+        final double[] targets = new double[length];
+        final double[] weights = new double[length];
 
-        int i = 0;
+        int count = 0;
         for (WeightedObservedPoint obs : observations) {
-            target[i] = obs.getY();
-            weights[i] = obs.getWeight();
-            ++i;
+            targets[count] = obs.getY();
+            weights[count] = obs.getWeight();
+            ++count;
         }
 
         final AbstractCurveFitter.TheoreticalValuesFunction model =
@@ -92,7 +92,7 @@ public class LogisticFitter extends AbstractCurveFitter {
                 maxEvaluations(Integer.MAX_VALUE).
                 maxIterations(maxIter).
                 start(startPoint).
-                target(target).
+                target(targets).
                 weight(new DiagonalMatrix(weights)).
                 model(model.getModelFunction(), model.getModelFunctionJacobian()).
                 build();

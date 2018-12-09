@@ -1,4 +1,4 @@
-package cn.edu.gxust.jiweihuang.scala.math.fitting
+package cn.edu.gxust.jiweihuang.scala.math.fitter
 
 import java.util
 

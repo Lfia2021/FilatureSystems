@@ -8,7 +8,8 @@ import org.hipparchus.fitting.{AbstractCurveFitter, WeightedObservedPoint}
 import org.hipparchus.linear.DiagonalMatrix
 import org.hipparchus.optim.nonlinear.vector.leastsquares.{LeastSquaresBuilder, LeastSquaresProblem}
 
-class LogisticFitter(val initialGuess: Array[Double] = new Array[Double](3),
+class LogisticFitter(val initialGuess: Array[Double] =
+                     new Array[Double](3),
                      val maxIter: Int = Int.MaxValue)
   extends AbstractCurveFitter {
 
@@ -24,7 +25,7 @@ class LogisticFitter(val initialGuess: Array[Double] = new Array[Double](3),
 
   override def getProblem(points: util.Collection[WeightedObservedPoint]): LeastSquaresProblem = {
 
-    // Prepare least-squares problem.// Prepare least-squares problem.
+    // Prepare least-squares problem.
     import scala.collection.JavaConverters._
     val bufferp = points.asScala
     val targets = bufferp.map(f => f.getY).toArray
@@ -34,12 +35,13 @@ class LogisticFitter(val initialGuess: Array[Double] = new Array[Double](3),
 
     // Return a new optimizer set up to fit a Gaussian curve to the
     // observed points.
-    return new LeastSquaresBuilder().maxEvaluations(Int.MaxValue).
+    new LeastSquaresBuilder().maxEvaluations(Int.MaxValue).
       maxIterations(maxIter).
       start(initialGuess).
       target(targets).
       weight(new DiagonalMatrix(weights)).
-      model(model.getModelFunction, model.getModelFunctionJacobian).build
+      model(model.getModelFunction,
+        model.getModelFunctionJacobian).build
   }
 
   def fitToLogistic(observations: util.Collection[WeightedObservedPoint]): TLogistic = {

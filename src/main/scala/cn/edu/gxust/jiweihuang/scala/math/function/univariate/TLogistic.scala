@@ -28,7 +28,7 @@ trait TLogistic extends TUnivariateFunction
   val logisticK: Double = 1
   val logisticX0: Double = 0
 
-  if (logisticM == 0) throw new IllegalArgumentException(s"Expected the property {logisticM != 0},but get {logisticM = $logisticM}")
+  //if (logisticM == 0) throw new IllegalArgumentException(s"Expected the property {logisticM != 0},but get {logisticM = $logisticM}")
 
   /**
     * The string form of analysis formula of univariate function.
@@ -158,8 +158,8 @@ object TLogistic {
       s"Expected the parameter {parameters != null},but got {parameters = null}}")
     if (parameters.length != 3) throw new IllegalArgumentException(
       s"Expected the parameter {parameters.length == 3},but got {parameters.length = ${parameters.length}}")
-    if (parameters.head == 0) throw new IllegalArgumentException(
-      s"Expected the parameter {parameters(0) != 0},but got {parameters(0) = ${parameters.head}}")
+    //if (parameters.head == 0) throw new IllegalArgumentException(
+    //  s"Expected the parameter {parameters(0) != 0},but got {parameters(0) = ${parameters.head}}")
   }
 
   def apply(logisticM: Double = 1,

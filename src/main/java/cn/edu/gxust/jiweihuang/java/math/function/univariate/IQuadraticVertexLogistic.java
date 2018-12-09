@@ -3,8 +3,10 @@ package cn.edu.gxust.jiweihuang.java.math.function.univariate;
 import org.hipparchus.analysis.ParametricUnivariateFunction;
 import org.hipparchus.analysis.differentiation.DerivativeStructure;
 
-public interface IQuadraticVertexLogistic extends IUnivariateFunction, IUnivariateDerivativeFunction,
-        IUnivariateDifferentiableFunction, IUnivariateIntegrableFunction {
+public interface IQuadraticVertexLogistic extends
+        IUnivariateFunction, IUnivariateDerivativeFunction,
+        IUnivariateDifferentiableFunction,
+        IUnivariateIntegrableFunction {
 
     double getQuadraticVertexA();
 

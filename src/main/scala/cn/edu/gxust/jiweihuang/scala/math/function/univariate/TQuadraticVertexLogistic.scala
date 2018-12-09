@@ -90,7 +90,7 @@ object TQuadraticVertexLogistic {
             quadraticVertexB: Double = 0.0,
             quadraticVertexC: Double = 0.0,
             logisticM: Double = 1.0,
-            logisticK: Double = -1.0,
+            logisticK: Double = 1.0,
             logisticX0: Double = 0.0,
             quadraticVertexLogisticD: Double = 0.0): TQuadraticVertexLogistic =
     QuadraticVertexLogistic(quadraticVertexA, quadraticVertexB, quadraticVertexC, logisticM,

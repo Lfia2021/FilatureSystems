@@ -1,6 +1,5 @@
 package cn.edu.gxust.jiweihuang.scala.math.function.univariate
 
-
 import org.hipparchus.analysis.ParametricUnivariateFunction
 import org.hipparchus.analysis.differentiation.DerivativeStructure
 
@@ -16,13 +15,14 @@ import scala.math.{exp, log, pow}
   * {{{logisticK}}} :The parameter {k} of logistic function.
   * {{{logisticX0}}}:The parameter {x0} of logistic function.
   */
-trait TLogistic extends TUnivariateDifferentiableFunction
+trait TLogistic extends TUnivariateFunction
+  with TUnivariateDifferentiableFunction
   with TUnivariateIntegrableFunction
   with TUnivariateDerivativeFunction
   with TUnivariateIntegralFunction {
 
   val logisticM: Double = 1.0
-  val logisticK: Double = -1.0
+  val logisticK: Double = 1.0
   val logisticX0: Double = 0.0
 
   if (logisticM == 0) throw new IllegalArgumentException(s"Expected the parameter {logisticM != 0},but get {logisticM = $logisticM}")
@@ -126,7 +126,7 @@ object TLogistic {
     }
   }
 
-  def apply(logisticM: Double = 1.0, logisticK: Double = -1.0, logisticX0: Double = 0.0): TLogistic = Logistic(logisticM, logisticK, logisticX0)
+  def apply(logisticM: Double = 1.0, logisticK: Double = 1.0, logisticX0: Double = 0.0): TLogistic = Logistic(logisticM, logisticK, logisticX0)
 
   def unapply(logistic: TLogistic): Option[(Double, Double, Double)] =
     if (logistic == null) None
@@ -136,15 +136,15 @@ object TLogistic {
 
   def logisticDerivative(logisticM: Double = 1.0, logisticK: Double = -1.0, logisticX0: Double = 0.0)(x: Double): Double = (logisticM * logisticK * logisticExp(logisticK, logisticX0)(x)) / pow(logisticExpAddOne(logisticK, logisticX0)(x), 2)
 
-  def logisticExp(logisticK: Double = -1.0, logisticX0: Double = 0.0)(x: Double): Double = exp(-logisticK * (x - logisticX0))
+  def logisticExp(logisticK: Double = 1.0, logisticX0: Double = 0.0)(x: Double): Double = exp(-logisticK * (x - logisticX0))
 
-  def logisticExpAddOne(logisticK: Double = -1.0, logisticX0: Double = 0.0)(x: Double): Double = 1 + logisticExp(logisticK, logisticX0)(x)
+  def logisticExpAddOne(logisticK: Double = 1.0, logisticX0: Double = 0.0)(x: Double): Double = 1 + logisticExp(logisticK, logisticX0)(x)
 
-  def logisticIntegrate(logisticM: Double = 1.0, logisticK: Double = -1.0, logisticX0: Double = 0.0)(x: Double): Double = logisticM * (x + log(logisticExpAddOne(logisticK, logisticX0)(x)) / logisticK)
+  def logisticIntegrate(logisticM: Double = 1.0, logisticK: Double = 1.0, logisticX0: Double = 0.0)(x: Double): Double = logisticM * (x + log(logisticExpAddOne(logisticK, logisticX0)(x)) / logisticK)
 
-  def logisticDerivativeM(logisticM: Double = 1.0, logisticK: Double = -1.0, logisticX0: Double = 0.0)(x: Double): Double = 1 / logisticExpAddOne(logisticK, logisticX0)(x)
+  def logisticDerivativeM(logisticM: Double = 1.0, logisticK: Double = 1.0, logisticX0: Double = 0.0)(x: Double): Double = 1 / logisticExpAddOne(logisticK, logisticX0)(x)
 
-  def logisticDerivativeK(logisticM: Double = 1.0, logisticK: Double = -1.0, logisticX0: Double = 0.0)(x: Double): Double = -(logisticM * (-x + logisticX0) * logisticExp(logisticK, logisticM)(x)) / pow(logisticExpAddOne(logisticK, logisticX0)(x), 2)
+  def logisticDerivativeK(logisticM: Double = 1.0, logisticK: Double = 1.0, logisticX0: Double = 0.0)(x: Double): Double = -(logisticM * (-x + logisticX0) * logisticExp(logisticK, logisticM)(x)) / pow(logisticExpAddOne(logisticK, logisticX0)(x), 2)
 
-  def logisticDerivativeX0(logisticM: Double = 1.0, logisticK: Double = -1.0, logisticX0: Double = 0.0)(x: Double): Double = -(logisticK * logisticM * logisticExp(logisticK, logisticX0)(x)) / pow(logisticExpAddOne(logisticK, logisticX0)(x), 2)
+  def logisticDerivativeX0(logisticM: Double = 1.0, logisticK: Double = 1.0, logisticX0: Double = 0.0)(x: Double): Double = -(logisticK * logisticM * logisticExp(logisticK, logisticX0)(x)) / pow(logisticExpAddOne(logisticK, logisticX0)(x), 2)
 }

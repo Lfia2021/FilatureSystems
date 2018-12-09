@@ -6,27 +6,27 @@ import org.hipparchus.analysis.differentiation.DerivativeStructure
 import scala.math._
 
 /**
-  * <p>The trait [[TQuadraticVertex]] is used for representing
-  * the vertex form of quadratic function of which formula is
-  * {{{q(x)=a*(x-b)^2+c}}}</p>
+  * <p>reference: https://en.wikipedia.org/wiki/Quadratic_function</p>
+  * <p>The formula:{{{q(x)=a*(x-b)^2+c}}}.</p>
   *
-  * {{{quadraticVertexA}}}:the parameter {a} of the vertex form of quadratic function.
-  * {{{quadraticVertexB}}}:the parameter {b} of the vertex form of quadratic function.
-  * {{{quadraticVertexC}}}:the parameter {c} of the vertex form of quadratic function.
+  * <p>The property: {{{quadraticVertexA}}}:the parameter {a} of the vertex form of quadratic function.</p>
+  * <p>The property: {{{quadraticVertexB}}}:the parameter {b} of the vertex form of quadratic function.</p>
+  * <p>The property: {{{quadraticVertexC}}}:the parameter {c} of the vertex form of quadratic function.</p>
+  *
+  * <p>require {{{quadraticVertexA != 0}}}</p>
   *
   * @see TQuadratic
   */
 trait TQuadraticVertex extends TQuadratic {
-  val quadraticVertexA: Double = 1.0
-  val quadraticVertexB: Double = 0.0
-  val quadraticVertexC: Double = 0.0
+  val quadraticVertexA: Double = 1
+  val quadraticVertexB: Double = 0
+  val quadraticVertexC: Double = 0
   /**
     * Ensure the parameters {{{quadraticVertexA != 0}}}
     */
-  if (quadraticVertexA == 0) throw new IllegalArgumentException(s"Expected the parameter {quadraticVertexA != 0},but got {quadraticVertexA = $quadraticVertexA}.")
-  /**
-    * The vertex coordinates {{{(x,y)}}} of quadratic function
-    */
+  if (quadraticVertexA == 0) throw new IllegalArgumentException(
+    s"Expected the parameter {quadraticVertexA != 0},but got {quadraticVertexA = $quadraticVertexA}.")
+
   override val vertex: Array[Double] = Array(quadraticVertexB, quadraticVertexC)
   /**
     * <p>whether quadratic function is invert.</p>
@@ -52,18 +52,20 @@ trait TQuadraticVertex extends TQuadratic {
     */
   override val xIntersectionNum: Int = xIntersection.length
   /**
-    * The String form of univariate function.
+    * The String of vertex of quadratic function.
     */
   override val formula: String = s"$quadraticVertexA * pow(x - $quadraticVertexB, 2) + $quadraticVertexC"
 
   /**
     * q(x) = a * pow(x-b,2) + c
     */
-  override def value(x: Double): Double = quadraticVertexA * pow(x - quadraticVertexB, 2) + quadraticVertexC
+  override def value(x: Double): Double = {
+    TQuadraticVertex.quadraticVertex(quadraticVertexA, quadraticVertexB, quadraticVertexC)(x)
+  }
 
-
-  override def value(x: DerivativeStructure): DerivativeStructure =
+  override def value(x: DerivativeStructure): DerivativeStructure = {
     x.subtract(quadraticVertexB).pow(2).multiply(quadraticVertexA).add(quadraticVertexC)
+  }
 
   override def inverse(x: Double): Array[Double] = {
     Array((quadraticVertexA * quadraticVertexB - sqrt(quadraticVertexA * (x - quadraticVertexC))) / quadraticVertexA,
@@ -73,11 +75,13 @@ trait TQuadraticVertex extends TQuadratic {
   /**
     * iq(x) = a * pow(b,2) * x + c * x - a * b * pow(x,2)  +  (a * pow(x,3)) / 3
     */
-  override def integrate(x: Double): Double = quadraticVertexA * pow(quadraticVertexB, 2) * x +
-    quadraticVertexC * x - quadraticVertexA * quadraticVertexB * Math.pow(x, 2) +
-    quadraticVertexA * pow(x, 3) / 3.0
+  override def integrate(x: Double): Double = {
+    TQuadraticVertex.quadraticVertexIntegrate(quadraticVertexA, quadraticVertexB, quadraticVertexC)(x)
+  }
 
-  override def derivative(x: Double): Double = 2 * quadraticVertexA * (x - quadraticVertexB)
+  override def derivative(x: Double): Double = {
+    TQuadraticVertex.quadraticVertexDerivative(quadraticVertexA, quadraticVertexB, quadraticVertexC)(x)
+  }
 
   override def equals(other: Any): Boolean = other match {
     case that: TQuadraticVertex =>
@@ -99,44 +103,70 @@ trait TQuadraticVertex extends TQuadratic {
 
 object TQuadraticVertex {
 
+  def quadraticVertex(quadraticVertexA: Double = 1,
+                      quadraticVertexB: Double = 0,
+                      quadraticVertexC: Double = 0)(x: Double): Double = {
+    quadraticVertexA * pow(x - quadraticVertexB, 2) + quadraticVertexC
+  }
+
+  def quadraticVertexDerivative(quadraticVertexA: Double = 1,
+                                quadraticVertexB: Double = 0,
+                                quadraticVertexC: Double = 0)(x: Double): Double = {
+    2 * quadraticVertexA * (x - quadraticVertexB)
+  }
+
+  def quadraticVertexIntegrate(quadraticVertexA: Double = 1,
+                               quadraticVertexB: Double = 0,
+                               quadraticVertexC: Double = 0)(x: Double): Double = {
+    quadraticVertexA * pow(quadraticVertexB, 2) * x +
+      quadraticVertexC * x - quadraticVertexA * quadraticVertexB * pow(x, 2) +
+      quadraticVertexA * pow(x, 3) / 3
+  }
+
+  def quadraticVertexDerivativeA(quadraticVertexA: Double = 1,
+                                 quadraticVertexB: Double = 0,
+                                 quadraticVertexC: Double = 0)(x: Double): Double = {
+    pow(x - quadraticVertexB, 2)
+  }
+
+  def quadraticVertexDerivativeB(quadraticVertexA: Double = 1,
+                                 quadraticVertexB: Double = 0,
+                                 quadraticVertexC: Double = 0)(x: Double): Double = {
+    -2 * quadraticVertexA * (x - quadraticVertexB)
+  }
+
+  def quadraticVertexDerivativeC(quadraticVertexA: Double = 1,
+                                 quadraticVertexB: Double = 0,
+                                 quadraticVertexC: Double = 0)(x: Double): Double = 1
+
+  def checkParameter(parameters: Double*): Unit = {
+    if (parameters == null) throw new IllegalArgumentException(
+      s"Expected the parameter {parameters != null},but got {parameters = null}}")
+    if (parameters.length != 3) throw new IllegalArgumentException(
+      s"Expected the parameter {parameters.length == 3},but got {parameters.length = ${parameters.length}}")
+    if (parameters.head == 0) throw new IllegalArgumentException(
+      s"Expected the parameter {parameters(0) != 0},but got {parameters(0) = ${parameters.head}}")
+  }
+
   final class Parametric extends ParametricUnivariateFunction {
     override def value(x: Double, parameters: Double*): Double = {
       checkParameter(parameters: _*)
-      val a = parameters(0)
-      val b = parameters(1)
-      val c = parameters(2)
-      a * pow(x - b, 2) + c
+      quadraticVertex(parameters(0), parameters(1), parameters(2))(x)
     }
 
     override def gradient(x: Double, parameters: Double*): Array[Double] = {
       checkParameter(parameters: _*)
-      val a = parameters(0)
-      val b = parameters(1)
-      //val c = parameters(2)
-      val result = new Array[Double](3)
-      result(0) = pow(x - b, 2)
-      result(1) = -2 * a * (x - b)
-      result(2) = 1
-      result
+      Array[Double](quadraticVertexDerivativeA(parameters(0), parameters(1), parameters(2))(x),
+        quadraticVertexDerivativeB(parameters(0), parameters(1), parameters(2))(x),
+        quadraticVertexDerivativeC(parameters(0), parameters(1), parameters(2))(x))
     }
 
-    def checkParameter(parameters: Double*): Unit = {
-      if (parameters == null) throw new IllegalArgumentException(s"Expected the parameter {parameters != null},but got {parameters = null}}")
-      if (parameters.length != 3) throw new IllegalArgumentException(s"Expected the parameter {parameters.length == 3},but got {parameters.length = ${parameters.length}}")
-      if (parameters.head == 0) throw new IllegalArgumentException(s"Expected the parameter {parameters(0) != 0},but got {parameters(0) = ${parameters.head}}")
-    }
   }
 
-  /**
-    * in order to acquire ability of constructing [[TQuadraticVertex]] object without new.
-    */
   def apply(quadraticVertexA: Double = 1.0, quadraticVertexB: Double = 0.0,
             quadraticVertexC: Double = 0.0): TQuadraticVertex =
     QuadraticVertex(quadraticVertexA, quadraticVertexB, quadraticVertexC)
 
-  /**
-    * in order to acquire ability of case information.
-    */
   def unapply(qv: TQuadraticVertex): Option[(Double, Double, Double)] = {
     if (qv == null) {
       None
@@ -145,33 +175,4 @@ object TQuadraticVertex {
     }
   }
 
-  def quadraticVertex(quadraticVertexA: Double = 1.0,
-                      quadraticVertexB: Double = 0.0,
-                      quadraticVertexC: Double = 0.0)(x: Double): Double =
-    quadraticVertexA * pow(x - quadraticVertexB, 2) + quadraticVertexC
-
-  def quadraticVertexDerivative(quadraticVertexA: Double = 1.0,
-                                quadraticVertexB: Double = 0.0,
-                                quadraticVertexC: Double = 0.0)(x: Double): Double =
-    2 * quadraticVertexA * (x - quadraticVertexB)
-
-  def quadraticVertexIntegrate(quadraticVertexA: Double = 1.0,
-                               quadraticVertexB: Double = 0.0,
-                               quadraticVertexC: Double = 0.0)(x: Double): Double =
-    quadraticVertexA * pow(quadraticVertexB, 2.0) * x +
-      quadraticVertexC * x - quadraticVertexA * quadraticVertexB * pow(x, 2) + quadraticVertexA * pow(x, 3) / 3
-
-  def quadraticVertexDerivativeA(quadraticVertexA: Double = 1.0,
-                                 quadraticVertexB: Double = 0.0,
-                                 quadraticVertexC: Double = 0.0)(x: Double): Double =
-    pow(x - quadraticVertexB, 2)
-
-  def quadraticVertexDerivativeB(quadraticVertexA: Double = 1.0,
-                                 quadraticVertexB: Double = 0.0,
-                                 quadraticVertexC: Double = 0.0)(x: Double): Double =
-    -2 * quadraticVertexA * (x - quadraticVertexB)
-
-  def quadraticVertexDerivativeC(quadraticVertexA: Double = 1.0,
-                                 quadraticVertexB: Double = 0.0,
-                                 quadraticVertexC: Double = 0.0)(x: Double): Double = 1
 }

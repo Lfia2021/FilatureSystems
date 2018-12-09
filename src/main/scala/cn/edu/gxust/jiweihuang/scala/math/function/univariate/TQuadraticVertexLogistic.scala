@@ -6,9 +6,11 @@ import org.hipparchus.analysis.differentiation.DerivativeStructure
 
 import scala.math._
 
-trait TQuadraticVertexLogistic extends TUnivariateDifferentiableFunction
+trait TQuadraticVertexLogistic extends TUnivariateFunction
+  with TUnivariateDifferentiableFunction
   with TUnivariateIntegrableFunction
   with TUnivariateDerivativeFunction {
+
   val quadraticVertexA: Double
   val quadraticVertexB: Double
   val quadraticVertexC: Double
@@ -22,77 +24,120 @@ trait TQuadraticVertexLogistic extends TUnivariateDifferentiableFunction
 
   override def derivative(x: Double): Double = quadraticVertex.derivative(x) * logistic.value(x) + logistic.derivative(x) * quadraticVertex.value(x)
 
-  /**
-    * omitted the Polylog part.
-    *
-    * @param x independent variable.
-    * @return the integral value.
-    */
-  def integrateAnalyzablePart(x: Double): Double = {
-    quadraticVertexLogisticD * x + quadraticVertexA * logisticM * pow(x, 3) / 3 -
-      2 * quadraticVertexA * quadraticVertexB * logisticM * x * log(1 + exp(logisticK * (x - logisticX0))) / logisticK +
-      quadraticVertexA * pow(quadraticVertexB, 2) * logisticM * log(exp(logisticK * x) + exp(logisticK * logisticX0)) / logisticK +
-      quadraticVertexC * logisticM * log(exp(logisticK * x) + exp(logisticK * logisticX0)) / logisticK +
-      quadraticVertexA * logisticM * pow(x, 2) * log(1 + exp(logisticK * (logisticX0 - x))) / logisticK
-  }
-
   override def value(ds: DerivativeStructure): DerivativeStructure = quadraticVertex.value(ds).multiply(logistic.value(ds)).add(quadraticVertexLogisticD)
 
   override def value(x: Double): Double = logistic.value(x) * quadraticVertex.value(x) + quadraticVertexLogisticD
-
 }
 
 object TQuadraticVertexLogistic {
 
+  import cn.edu.gxust.jiweihuang.scala.math.function.univariate.TLogistic._
+  import cn.edu.gxust.jiweihuang.scala.math.function.univariate.TQuadraticVertex._
+
+  def quadraticVertexLogistic(a: Double, b: Double, c: Double,
+                              m: Double, k: Double, x0: Double,
+                              d: Double)(x: Double): Double = {
+    quadraticVertex(a, b, c)(x) * logistic(m, k, x0)(x) + d
+  }
+
+  def quadraticVertexLogisticDerivative(a: Double, b: Double, c: Double,
+                                        m: Double, k: Double, x0: Double,
+                                        d: Double)(x: Double): Double = {
+    quadraticVertexDerivative(a, b, c)(x) * logistic(m, k, x0)(x) + logisticDerivative(m, k, x0)(x) * quadraticVertex(a, b, c)(x)
+  }
+
+  def quadraticVertexLogisticDerivativeA(a: Double, b: Double, c: Double,
+                                         m: Double, k: Double, x0: Double,
+                                         d: Double)(x: Double): Double = {
+    pow(x - b, 2) * logistic(m, k, x0)(x)
+  }
+
+  def quadraticVertexLogisticDerivativeB(a: Double, b: Double, c: Double,
+                                         m: Double, k: Double, x0: Double,
+                                         d: Double)(x: Double): Double = {
+    quadraticVertexDerivative(a, b, c)(x) * logistic(m, k, x0)(x)
+  }
+
+  def quadraticVertexLogisticDerivativeC(a: Double, b: Double, c: Double,
+                                         m: Double, k: Double, x0: Double,
+                                         d: Double)(x: Double): Double = {
+    logistic(m, k, x0)(x)
+  }
+
+  def quadraticVertexLogisticDerivativeM(a: Double, b: Double, c: Double,
+                                         m: Double, k: Double, x0: Double,
+                                         d: Double)(x: Double): Double = {
+    quadraticVertex(a, b, c)(x) / logisticExpPlusOne(m, k, x0)(x)
+  }
+
+  def quadraticVertexLogisticDerivativeK(a: Double, b: Double, c: Double,
+                                         m: Double, k: Double, x0: Double,
+                                         d: Double)(x: Double): Double = {
+    logisticExp(k, x0)(x) * quadraticVertex(a, b, c)(x) * (x - x0) * m / logisticExpPlusOnePow2(m, k, x0)(x)
+  }
+
+  def quadraticVertexLogisticDerivativeX0(a: Double, b: Double, c: Double,
+                                          m: Double, k: Double, x0: Double,
+                                          d: Double)(x: Double): Double = {
+    -logisticExp(k, x0)(x) * quadraticVertex(a, b, c)(x) * k * m / logisticExpPlusOnePow2(m, k, x0)(x)
+  }
+
+  def quadraticVertexLogisticDerivativeD(a: Double, b: Double, c: Double,
+                                         m: Double, k: Double, x0: Double,
+                                         d: Double)(x: Double): Double = 1
+
   final class Parametric extends ParametricUnivariateFunction {
     override def value(x: Double, parameters: Double*): Double = {
       checkParameter(parameters: _*)
-      val a = parameters(0)
-      val b = parameters(1)
-      val c = parameters(2)
-      val m = parameters(3)
-      val k = parameters(4)
-      val x0 = parameters(5)
-      val d = parameters(6)
-      TQuadraticVertexLogistic.quadraticVertexLogistic(a, b, c, m, k, x0, d)(x)
+      TQuadraticVertexLogistic.quadraticVertexLogistic(parameters(0),
+        parameters(1), parameters(2), parameters(3), parameters(4),
+        parameters(5), parameters(6))(x)
     }
 
     override def gradient(x: Double, parameters: Double*): Array[Double] = {
       checkParameter(parameters: _*)
-      val a = parameters(0)
-      val b = parameters(1)
-      val c = parameters(2)
-      val m = parameters(3)
-      val k = parameters(4)
-      val x0 = parameters(5)
-      val d = parameters(6)
-      val result = Array[Double](7)
-
-      result(0) = quadraticVertexLogisticDerivativeA(a, b, c, m, k, x0, d)(x)
-      result(1) = quadraticVertexLogisticDerivativeB(a, b, c, m, k, x0, d)(x)
-      result(2) = quadraticVertexLogisticDerivativeC(a, b, c, m, k, x0, d)(x)
-      result(3) = quadraticVertexLogisticDerivativeM(a, b, c, m, k, x0, d)(x)
-      result(4) = quadraticVertexLogisticDerivativeK(a, b, c, m, k, x0, d)(x)
-      result(5) = quadraticVertexLogisticDerivativeX0(a, b, c, m, k, x0, d)(x)
-      result(6) = quadraticVertexLogisticDerivativeD(a, b, c, m, k, x0, d)(x)
-      result
+      Array[Double](quadraticVertexLogisticDerivativeA(parameters(0),
+        parameters(1), parameters(2), parameters(3), parameters(4),
+        parameters(5), parameters(6))(x),
+        quadraticVertexLogisticDerivativeB(parameters(0),
+          parameters(1), parameters(2), parameters(3), parameters(4),
+          parameters(5), parameters(6))(x),
+        quadraticVertexLogisticDerivativeC(parameters(0),
+          parameters(1), parameters(2), parameters(3), parameters(4),
+          parameters(5), parameters(6))(x),
+        quadraticVertexLogisticDerivativeM(parameters(0),
+          parameters(1), parameters(2), parameters(3), parameters(4),
+          parameters(5), parameters(6))(x),
+        quadraticVertexLogisticDerivativeK(parameters(0),
+          parameters(1), parameters(2), parameters(3), parameters(4),
+          parameters(5), parameters(6))(x),
+        quadraticVertexLogisticDerivativeX0(parameters(0),
+          parameters(1), parameters(2), parameters(3), parameters(4),
+          parameters(5), parameters(6))(x),
+        quadraticVertexLogisticDerivativeD(parameters(0),
+          parameters(1), parameters(2), parameters(3), parameters(4),
+          parameters(5), parameters(6))(x))
     }
 
     def checkParameter(parameters: Double*): Unit = {
-      if (parameters == null) throw new IllegalArgumentException(s"Expected the parameter {parameters != null},but got {parameters = null}}")
-      if (parameters.length != 7) throw new IllegalArgumentException(s"Expected the parameter {parameters.length == 7},but got {parameters.length = ${parameters.length}}")
-      if (parameters.head == 0) throw new IllegalArgumentException(s"Expected the parameter {parameters(0) != 0},but got {parameters(0) = ${parameters.head}}")
-      if (parameters(3) == 0) throw new IllegalArgumentException(s"Expected the parameter {parameters(3) != 0},but got {parameters(0) = ${parameters.head}}")
+      if (parameters == null) throw new IllegalArgumentException(
+        s"Expected the parameter {parameters != null},but got {parameters = null}}")
+      if (parameters.length != 7) throw new IllegalArgumentException(
+        s"Expected the parameter {parameters.length == 7},but got {parameters.length = ${parameters.length}}")
+      if (parameters.head == 0) throw new IllegalArgumentException(
+        s"Expected the parameter {parameters(0) != 0},but got {parameters(0) = ${parameters.head}}")
+      if (parameters(3) == 0) throw new IllegalArgumentException(
+        s"Expected the parameter {parameters(3) != 0},but got {parameters(3) = ${parameters(3)}}")
     }
   }
 
-  def apply(quadraticVertexA: Double = 1.0,
-            quadraticVertexB: Double = 0.0,
-            quadraticVertexC: Double = 0.0,
-            logisticM: Double = 1.0,
-            logisticK: Double = 1.0,
-            logisticX0: Double = 0.0,
-            quadraticVertexLogisticD: Double = 0.0): TQuadraticVertexLogistic =
+  def apply(quadraticVertexA: Double = 1,
+            quadraticVertexB: Double = 0,
+            quadraticVertexC: Double = 0,
+            logisticM: Double = 1,
+            logisticK: Double = 1,
+            logisticX0: Double = 0,
+            quadraticVertexLogisticD: Double = 0): TQuadraticVertexLogistic =
     QuadraticVertexLogistic(quadraticVertexA, quadraticVertexB, quadraticVertexC, logisticM,
       logisticK, logisticX0, quadraticVertexLogisticD)
 
@@ -105,52 +150,4 @@ object TQuadraticVertexLogistic {
       quadraticVertexLogistic.logisticK,
       quadraticVertexLogistic.logisticX0,
       quadraticVertexLogistic.quadraticVertexLogisticD)
-
-  def quadraticVertexLogistic(a: Double, b: Double, c: Double, m: Double, k: Double, x0: Double, d: Double)(x: Double): Double = {
-    import cn.edu.gxust.jiweihuang.scala.math.function.univariate.TLogistic._
-    import cn.edu.gxust.jiweihuang.scala.math.function.univariate.TQuadraticVertex._
-    quadraticVertex(a, b, c)(x) * logistic(m, k, x0)(x) + d
-  }
-
-  def quadraticVertexLogisticDerivative(a: Double, b: Double, c: Double, m: Double, k: Double, x0: Double, d: Double)(x: Double): Double = {
-    import cn.edu.gxust.jiweihuang.scala.math.function.univariate.TLogistic._
-    import cn.edu.gxust.jiweihuang.scala.math.function.univariate.TQuadraticVertex._
-    quadraticVertexDerivative(a, b, c)(x) * logistic(m, k, x0)(x) + logisticDerivative(m, k, x0)(x) * quadraticVertex(a, b, c)(x)
-  }
-
-  def quadraticVertexLogisticDerivativeA(a: Double, b: Double, c: Double, m: Double, k: Double, x0: Double, d: Double)(x: Double): Double = {
-    import cn.edu.gxust.jiweihuang.scala.math.function.univariate.TLogistic._
-    pow(x - b, 2) * logistic(m, k, x0)(x)
-  }
-
-  def quadraticVertexLogisticDerivativeB(a: Double, b: Double, c: Double, m: Double, k: Double, x0: Double, d: Double)(x: Double): Double = {
-    import cn.edu.gxust.jiweihuang.scala.math.function.univariate.TLogistic._
-    import cn.edu.gxust.jiweihuang.scala.math.function.univariate.TQuadraticVertex._
-    quadraticVertexDerivative(a, b, c)(x) * logistic(m, k, x0)(x)
-  }
-
-  def quadraticVertexLogisticDerivativeC(a: Double, b: Double, c: Double, m: Double, k: Double, x0: Double, d: Double)(x: Double): Double = {
-    import cn.edu.gxust.jiweihuang.scala.math.function.univariate.TLogistic._
-    logistic(m, k, x0)(x)
-  }
-
-  def quadraticVertexLogisticDerivativeM(a: Double, b: Double, c: Double, m: Double, k: Double, x0: Double, d: Double)(x: Double): Double = {
-    import cn.edu.gxust.jiweihuang.scala.math.function.univariate.TLogistic._
-    import cn.edu.gxust.jiweihuang.scala.math.function.univariate.TQuadraticVertex._
-    quadraticVertex(a, b, c)(x) / logisticExpAddOne(k, x0)(x)
-  }
-
-  def quadraticVertexLogisticDerivativeK(a: Double, b: Double, c: Double, m: Double, k: Double, x0: Double, d: Double)(x: Double): Double = {
-    import cn.edu.gxust.jiweihuang.scala.math.function.univariate.TLogistic._
-    import cn.edu.gxust.jiweihuang.scala.math.function.univariate.TQuadraticVertex._
-    logisticExp(k, x0)(x) * quadraticVertex(a, b, c)(x) * (x - x0) * m / pow(logisticExpAddOne(k, x0)(x), 2)
-  }
-
-  def quadraticVertexLogisticDerivativeX0(a: Double, b: Double, c: Double, m: Double, k: Double, x0: Double, d: Double)(x: Double): Double = {
-    import cn.edu.gxust.jiweihuang.scala.math.function.univariate.TLogistic._
-    import cn.edu.gxust.jiweihuang.scala.math.function.univariate.TQuadraticVertex._
-    -logisticExp(k, x0)(x) * quadraticVertex(a, b, c)(x) * k * m / pow(logisticExpAddOne(k, x0)(x), 2)
-  }
-
-  def quadraticVertexLogisticDerivativeD(a: Double, b: Double, c: Double, m: Double, k: Double, x0: Double, d: Double)(x: Double): Double = 1
 }
